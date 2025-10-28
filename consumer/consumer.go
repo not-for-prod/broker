@@ -6,10 +6,9 @@ import (
 
 	"github.com/avast/retry-go"
 	"github.com/not-for-prod/broker"
-	"github.com/not-for-prod/broker/models"
 )
 
-type Job func(ctx context.Context, events []models.Event) error
+type Job func(ctx context.Context, events []broker.Event) error
 
 type Consumer struct {
 	Broker    Broker
@@ -74,7 +73,7 @@ func (c *Consumer) consume(ctx context.Context) error {
 				return err
 			}
 
-			filtered := make([]models.Event, 0, len(records))
+			filtered := make([]broker.Event, 0, len(records))
 
 			for i := range records {
 				if nx[i] {

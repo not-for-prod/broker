@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/not-for-prod/broker/models"
+	"github.com/not-for-prod/broker"
 )
 
-func (s *Implementation) SetNX(ctx context.Context, events []models.Event) ([]bool, error) {
+func (s *Implementation) SetNX(ctx context.Context, events []broker.Event) ([]bool, error) {
 	if len(events) == 0 {
 		return nil, nil
 	}

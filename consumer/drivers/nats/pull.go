@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nats-io/nats.go"
-	model "github.com/not-for-prod/broker/models"
+	model "github.com/not-for-prod/broker"
 )
 
 func (i *Implementation) Pull(ctx context.Context, batchSize uint64) ([]model.Event, error) {

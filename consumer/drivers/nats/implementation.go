@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/nats-io/nats.go"
-	model "github.com/not-for-prod/broker/models"
+	model "github.com/not-for-prod/broker"
 )
 
 type Implementation struct {

@@ -3,14 +3,14 @@ package producer
 import (
 	"context"
 
-	"github.com/not-for-prod/broker/models"
+	"github.com/not-for-prod/broker"
 )
 
 type Storage interface {
-	Push(ctx context.Context, e []models.Event) error
+	Push(ctx context.Context, e []broker.Event) error
 	GetOffset(ctx context.Context, producerName string) (uint64, error)
 	CommitOffset(ctx context.Context, producerName string, offset uint64) error
-	ListRecords(ctx context.Context, limit, offset uint64) ([]models.Event, error)
+	ListRecords(ctx context.Context, limit, offset uint64) ([]broker.Event, error)
 }
 
 type TxManager interface {

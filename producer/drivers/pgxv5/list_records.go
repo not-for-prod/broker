@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/not-for-prod/broker/models"
+	"github.com/not-for-prod/broker"
 )
 
-func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset uint64) ([]models.Event, error) {
+func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset uint64) ([]broker.Event, error) {
 	rows, err := i.pool.Query(
 		ctx, `
 		SELECT id, topic, partition, headers, payload, created_at
@@ -23,7 +23,7 @@ func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset u
 	}
 	defer rows.Close()
 
-	var events []models.Event
+	var events []broker.Event
 	for rows.Next() {
 		var (
 			id        uint64
@@ -43,7 +43,7 @@ func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset u
 		}
 
 		events = append(
-			events, models.Event{
+			events, broker.Event{
 				Topic:     topic,
 				Partition: partition,
 				Headers:   hdr,

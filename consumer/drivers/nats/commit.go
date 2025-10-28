@@ -3,7 +3,7 @@ package nats
 import (
 	context "context"
 
-	model "github.com/not-for-prod/broker/models"
+	model "github.com/not-for-prod/broker"
 )
 
 func (i *Implementation) CommitOffset(ctx context.Context, events []model.Event) error {

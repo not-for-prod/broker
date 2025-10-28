@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/not-for-prod/broker"
-	"github.com/not-for-prod/broker/models"
 )
 
 type Producer struct {
@@ -56,7 +55,7 @@ func (p *Producer) Stop(_ context.Context) error {
 	return nil
 }
 
-func (p *Producer) Push(ctx context.Context, e ...models.Event) error {
+func (p *Producer) Push(ctx context.Context, e ...broker.Event) error {
 	return p.Storage.Push(ctx, e)
 }
 

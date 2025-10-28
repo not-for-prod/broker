@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/not-for-prod/broker/models"
+	"github.com/not-for-prod/broker"
 )
 
-func (s *Implementation) Push(ctx context.Context, events []models.Event) error {
+func (s *Implementation) Push(ctx context.Context, events []broker.Event) error {
 	if len(events) == 0 {
 		return nil
 	}

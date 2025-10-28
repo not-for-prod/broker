@@ -3,11 +3,11 @@ package consumer
 import (
 	"context"
 
-	"github.com/not-for-prod/broker/models"
+	"github.com/not-for-prod/broker"
 )
 
 type Storage interface {
-	SetNX(ctx context.Context, e []models.Event) ([]bool, error)
+	SetNX(ctx context.Context, e []broker.Event) ([]bool, error)
 }
 
 type TxManager interface {

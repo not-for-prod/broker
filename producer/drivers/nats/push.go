@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nats-io/nats.go"
-	model "github.com/not-for-prod/broker/models"
+	model "github.com/not-for-prod/broker"
 )
 
 func convertEventToMsg(e model.Event) *nats.Msg {
