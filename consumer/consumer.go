@@ -20,7 +20,14 @@ type Consumer struct {
 	stop      chan struct{}
 }
 
-func New(broker Broker, storage Storage, txManager TxManager, job Job, logger broker.Logger, opts ...Option) *Consumer {
+func New(
+	broker Broker,
+	storage Storage,
+	txManager TxManager,
+	job Job,
+	logger broker.Logger,
+	opts ...Option,
+) *Consumer {
 	options := defaultOptions
 	for _, opt := range opts {
 		opt.apply(&options)

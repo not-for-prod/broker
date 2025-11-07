@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/not-for-prod/broker"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset uint64) ([]broker.Event, error) {
 	rows, err := i.pool.Query(
 		ctx, `
-		SELECT id, topic, partition, headers, payload, created_at
+		SELECT id, topic, partition, headers, body, trace_carrier, created_at
 		FROM outbox
 		ORDER BY id ASC
 		LIMIT $1 OFFSET $2
@@ -26,14 +27,15 @@ func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset u
 	var events []broker.Event
 	for rows.Next() {
 		var (
-			id        uint64
-			topic     string
-			partition string
-			headers   []byte
-			payload   []byte
-			createdAt time.Time
+			id           uint64
+			topic        string
+			partition    string
+			headers      []byte
+			payload      []byte
+			traceCarrier []byte
+			createdAt    time.Time
 		)
-		if err := rows.Scan(&id, &topic, &partition, &headers, &payload, &createdAt); err != nil {
+		if err := rows.Scan(&id, &topic, &partition, &headers, &payload, &traceCarrier, &createdAt); err != nil {
 			return nil, fmt.Errorf("scan record: %w", err)
 		}
 
@@ -42,12 +44,18 @@ func (i *Implementation) ListRecords(ctx context.Context, limit uint64, offset u
 			hdr = map[string]string{}
 		}
 
+		var mapCarrier propagation.MapCarrier
+		if err := json.Unmarshal(payload, &mapCarrier); err != nil {
+			mapCarrier = propagation.MapCarrier{}
+		}
+
 		events = append(
 			events, broker.Event{
 				Topic:     topic,
 				Partition: partition,
 				Headers:   hdr,
 				Body:      payload,
+				Ctx:       broker.ContextFromMapCarrier(mapCarrier),
 			},
 		)
 	}

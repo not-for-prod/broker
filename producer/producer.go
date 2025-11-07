@@ -16,7 +16,13 @@ type Producer struct {
 	stop      chan struct{}
 }
 
-func New(broker Broker, storage Storage, txManager TxManager, logger broker.Logger, opts ...Option) *Producer {
+func New(
+	broker Broker,
+	storage Storage,
+	txManager TxManager,
+	logger broker.Logger,
+	opts ...Option,
+) *Producer {
 	options := defaultOptions
 	for _, opt := range opts {
 		opt.apply(&options)
@@ -72,12 +78,18 @@ func (p *Producer) produce(ctx context.Context) error {
 				return err
 			}
 
+			if len(records) == 0 {
+				return nil
+			}
+
 			err = p.Broker.Push(ctx, records)
 			if err != nil {
 				return err
 			}
 
-			err = p.Storage.CommitOffset(ctx, p.options.producerName, uint64(len(records)))
+			maxIdx := records[len(records)-1].ID
+
+			err = p.Storage.CommitOffset(ctx, p.options.producerName, maxIdx)
 			if err != nil {
 				return err
 			}

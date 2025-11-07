@@ -2,24 +2,44 @@ package broker
 
 import (
 	"context"
-	"encoding/json"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
-
-type EventID string
-
-func (id *EventID) String() string {
-	return string(*id)
-}
 
 type Event struct {
 	Ctx       context.Context
-	ID        EventID
+	ID        uint64
 	Topic     string
 	Partition string
 	Headers   map[string]string
 	Body      []byte
 }
 
-func (e *Event) Scan(a any) error {
-	return json.Unmarshal(e.Body, a)
+func NewEvent(
+	ctx context.Context,
+	topic string,
+	partition string,
+	headers map[string]string,
+	body []byte,
+) *Event {
+	return &Event{
+		Ctx:       ctx,
+		ID:        0,
+		Topic:     topic,
+		Partition: partition,
+		Headers:   headers,
+		Body:      body,
+	}
+}
+
+func (e *Event) MapCarrier() propagation.MapCarrier {
+	mapCarrier := make(propagation.MapCarrier)
+	otel.GetTextMapPropagator().Inject(e.Ctx, mapCarrier)
+
+	return mapCarrier
+}
+
+func ContextFromMapCarrier(mapCarrier propagation.MapCarrier) context.Context {
+	return otel.GetTextMapPropagator().Extract(context.Background(), mapCarrier)
 }
