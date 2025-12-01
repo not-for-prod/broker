@@ -6,6 +6,11 @@ import (
 	"github.com/avast/retry-go"
 )
 
+const (
+	defaultBatchSize = 500
+	defaultInterval  = time.Second
+)
+
 type options struct {
 	batchSize    uint64
 	interval     time.Duration
@@ -24,12 +29,9 @@ func (f optionFunc) apply(o *options) {
 }
 
 var defaultOptions = options{
-	batchSize: 500,
-	interval:  time.Second,
-	retryOptions: []retry.Option{
-		retry.Attempts(3),
-		retry.Delay(time.Second),
-	},
+	batchSize:    defaultBatchSize,
+	interval:     defaultInterval,
+	retryOptions: []retry.Option{},
 }
 
 func WithBatchSize(batchSize uint64) Option {

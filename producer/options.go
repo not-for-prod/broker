@@ -2,6 +2,12 @@ package producer
 
 import "time"
 
+const (
+	defaultProducerName = "default"
+	defaultBatchSize    = 500
+	defaultInterval     = time.Second
+)
+
 type options struct {
 	producerName string
 	batchSize    uint64
@@ -20,9 +26,9 @@ func (f optionFunc) apply(o *options) {
 }
 
 var defaultOptions = options{
-	producerName: "default",
-	batchSize:    500,
-	interval:     time.Second,
+	producerName: defaultProducerName,
+	batchSize:    defaultBatchSize,
+	interval:     defaultInterval,
 }
 
 func WithBatchSize(batchSize uint64) Option {

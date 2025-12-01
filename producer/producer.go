@@ -62,7 +62,7 @@ func (p *Producer) Stop(_ context.Context) error {
 }
 
 func (p *Producer) Push(ctx context.Context, e ...broker.Event) error {
-	return p.Storage.Push(ctx, e)
+	return p.Storage.Push(ctx, e...)
 }
 
 func (p *Producer) produce(ctx context.Context) error {
@@ -87,7 +87,7 @@ func (p *Producer) produce(ctx context.Context) error {
 				return err
 			}
 
-			maxIdx := records[len(records)-1].ID
+			maxIdx := records[len(records)-1].Idx
 
 			err = p.Storage.CommitOffset(ctx, p.options.producerName, maxIdx)
 			if err != nil {

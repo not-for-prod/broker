@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/not-for-prod/broker"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/not-for-prod/broker"
 )
 
 type TestSuite struct {
@@ -27,7 +28,7 @@ func (suite *TestSuite) SetupSuite() {
 					resp = append(
 						resp, broker.Event{
 							Ctx:       context.Background(),
-							ID:        i,
+							Idx:       i,
 							Topic:     "test",
 							Partition: "test",
 							Headers:   nil,
@@ -35,6 +36,7 @@ func (suite *TestSuite) SetupSuite() {
 						},
 					)
 				}
+
 				return resp, nil
 			},
 		},
@@ -42,10 +44,11 @@ func (suite *TestSuite) SetupSuite() {
 			SetNXFunc: func(ctx context.Context, events []broker.Event) ([]bool, error) {
 				resp := make([]bool, 0, len(events))
 				for _, event := range events {
-					_, ok := suite.inbox[event.ID]
+					_, ok := suite.inbox[event.Idx]
 					resp = append(resp, !ok)
-					suite.inbox[event.ID] = true
+					suite.inbox[event.Idx] = true
 				}
+
 				return resp, nil
 			},
 		},
@@ -71,5 +74,6 @@ func (suite *TestSuite) TestConsume() {
 }
 
 func TestTestSuite(t *testing.T) {
+	t.Parallel()
 	suite.Run(t, new(TestSuite))
 }
