@@ -8,8 +8,10 @@ import (
 )
 
 type Event struct {
-	Ctx       context.Context
-	ID        uint64
+	Ctx context.Context //nolint:containedctx // context is used by drivers and should be passed along
+	Idx uint64
+	// User-defined label for incident investigation
+	Label     string
 	Topic     string
 	Partition string
 	Headers   map[string]string
@@ -25,12 +27,16 @@ func NewEvent(
 ) *Event {
 	return &Event{
 		Ctx:       ctx,
-		ID:        0,
 		Topic:     topic,
 		Partition: partition,
 		Headers:   headers,
 		Body:      body,
 	}
+}
+
+func (e *Event) WithLabel(label string) *Event {
+	e.Label = label
+	return e
 }
 
 func (e *Event) MapCarrier() propagation.MapCarrier {

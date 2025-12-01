@@ -9,7 +9,7 @@ import (
 //go:generate moq -out storage_mock.go . Storage TxManager
 
 type Storage interface {
-	Push(ctx context.Context, e []broker.Event) error
+	Push(ctx context.Context, e ...broker.Event) error
 	GetOffset(ctx context.Context, producerName string) (uint64, error)
 	CommitOffset(ctx context.Context, producerName string, offset uint64) error
 	ListRecords(ctx context.Context, limit, offset uint64) ([]broker.Event, error)

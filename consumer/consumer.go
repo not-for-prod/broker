@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go"
+
 	"github.com/not-for-prod/broker"
 )
 

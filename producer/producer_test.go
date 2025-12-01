@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/not-for-prod/broker"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/not-for-prod/broker"
 )
 
 type TestSuite struct {
@@ -25,6 +26,7 @@ func (suite *TestSuite) SetupSuite() {
 		Storage: &StorageMock{
 			CommitOffsetFunc: func(ctx context.Context, producerName string, offset uint64) error {
 				suite.offset = offset
+
 				return nil
 			},
 			GetOffsetFunc: func(ctx context.Context, producerName string) (uint64, error) {
@@ -33,11 +35,12 @@ func (suite *TestSuite) SetupSuite() {
 			ListRecordsFunc: func(ctx context.Context, limit uint64, offset uint64) ([]broker.Event, error) {
 				return suite.buffer, nil
 			},
-			PushFunc: func(ctx context.Context, events []broker.Event) error {
+			PushFunc: func(ctx context.Context, events ...broker.Event) error {
 				for i, event := range events {
-					event.ID = suite.offset + uint64(i) + 1
+					event.Idx = suite.offset + uint64(i) + 1
 					suite.buffer = append(suite.buffer, event)
 				}
+
 				return nil
 			},
 		},
@@ -71,5 +74,6 @@ func (suite *TestSuite) TestSend() {
 }
 
 func TestTestSuite(t *testing.T) {
+	t.Parallel()
 	suite.Run(t, new(TestSuite))
 }

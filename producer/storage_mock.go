@@ -28,7 +28,7 @@ var _ Storage = &StorageMock{}
 //			ListRecordsFunc: func(ctx context.Context, limit uint64, offset uint64) ([]broker.Event, error) {
 //				panic("mock out the ListRecords method")
 //			},
-//			PushFunc: func(ctx context.Context, e []broker.Event) error {
+//			PushFunc: func(ctx context.Context, e ...broker.Event) error {
 //				panic("mock out the Push method")
 //			},
 //		}
@@ -48,7 +48,7 @@ type StorageMock struct {
 	ListRecordsFunc func(ctx context.Context, limit uint64, offset uint64) ([]broker.Event, error)
 
 	// PushFunc mocks the Push method.
-	PushFunc func(ctx context.Context, e []broker.Event) error
+	PushFunc func(ctx context.Context, e ...broker.Event) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -208,7 +208,7 @@ func (mock *StorageMock) ListRecordsCalls() []struct {
 }
 
 // Push calls PushFunc.
-func (mock *StorageMock) Push(ctx context.Context, e []broker.Event) error {
+func (mock *StorageMock) Push(ctx context.Context, e ...broker.Event) error {
 	if mock.PushFunc == nil {
 		panic("StorageMock.PushFunc: method is nil but Storage.Push was just called")
 	}
@@ -222,7 +222,7 @@ func (mock *StorageMock) Push(ctx context.Context, e []broker.Event) error {
 	mock.lockPush.Lock()
 	mock.calls.Push = append(mock.calls.Push, callInfo)
 	mock.lockPush.Unlock()
-	return mock.PushFunc(ctx, e)
+	return mock.PushFunc(ctx, e...)
 }
 
 // PushCalls gets all the calls that were made to Push.
